@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Art-E-Dharohar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Playfair Display', serif;
+      background: linear-gradient(to bottom, #fff6e5, #fdf1e7);
+      color: #4a2c20;
+    }
+    header {
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      border-bottom: 2px solid #e6b07c;
+    }
+    header img {
+      height: 60px;
+    }
+    header h1 {
+      font-size: 1.8rem;
+      color: #a3471b;
+    }
+    nav a {
+      margin: 0 1rem;
+      text-decoration: none;
+      color: #a3471b;
+      font-weight: bold;
+    }
+    .hero {
+      text-align: center;
+      padding: 3rem 2rem;
+      background: linear-gradient(to right, #ffe8d6, #fff5ee);
+    }
+    .hero h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+    }
+    .product {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      transition: transform 0.3s;
+    }
+    .product:hover {
+      transform: scale(1.05);
+    }
+    .product img {
+      max-width: 100%;
+      border-radius: 8px;
+    }
+    .product h3 {
+      color: #a3471b;
+      margin: 0.5rem 0;
+    }
+    .product p {
+      margin: 0.3rem 0;
+    }
+    .product button {
+      margin: 0.3rem;
+      padding: 0.5rem 1rem;
+      background-color: #a3471b;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .footer {
+      text-align: center;
+      padding: 1rem;
+      background: #fff;
+      border-top: 2px solid #e6b07c;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center;">
+      <img src="ArtLogo.jpg" alt="Art-E-Dharohar Logo" />
+      <h1 style="margin-left: 1rem;">Art-E-Dharohar</h1>
+    </div>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#products">Products</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+      <a href="cart.html">Cart</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h2>Handcrafted Heritage at Your Fingertips</h2>
+    <p>Discover the essence of Indian tradition with our exclusive handmade creations. Each piece at Art-E-Dharohar is a tribute to timeless craftsmanship.</p>
+  </section>
+
+  <section class="products" id="products">
+    <!-- Initial product -->
+    <div class="product">
+      <img src="https://via.placeholder.com/250x200?text=Handmade+Pot" alt="Handmade Pot">
+      <h3>Handmade Clay Pot</h3>
+      <p>₹350</p>
+      <button onclick="payNow(350, 'Handmade Clay Pot')">Buy Now</button>
+      <button onclick="addToCart('Handmade Clay Pot', 350)">Add to Cart</button>
+    </div>
+  </section>
+
+  <footer class="footer">
+    &copy; 2025 Art-E-Dharohar. All rights reserved.
+  </footer>
+
+  <script>
+    const products = [
+      { name: 'Modern wall clock', price: 500 },
+      { name: 'Wall Decor Art', price: 799 },
+      { name: 'Name Plate', price: 999 },
+      { name: 'Light photo frames', price: 650 },
+      { name: 'Sketches', price: 300 },
+      { name: 'Bracelates', price: 850 },
+      { name: 'Key Chains', price: 450 },
+      { name: 'Name Key chains', price: 599 },
+      { name: 'Rakhi', price: 299 },
+      { name: 'Photo Rakhi', price: 400 },
+      { name: 'Laddu Gopal Dress', price: 1200 }
+    ];
+
+    function addToCart(name, price) {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      cart.push({ name, price });
+      localStorage.setItem('cart', JSON.stringify(cart));
+      alert(`${name} added to cart.`);
+    }
+
+    function payNow(amount, description) {
+      var options = {
+        key: "rzp_test_1DP5mmOlF5G5ag",
+        amount: amount * 100,
+        currency: "INR",
+        name: "Art-E-Dharohar",
+        description: description,
+        image: "/mnt/data/channels4_profile.jpg",
+        handler: function (response) {
+          alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
+        },
+        prefill: {
+          name: "",
+          email: "",
+          contact: ""
+        },
+        theme: {
+          color: "#a3471b"
+        }
+      };
+      var rzp = new Razorpay(options);
+      rzp.open();
+    }
+
+    window.onload = () => {
+      const container = document.getElementById('products');
+      products.forEach(product => {
+        const div = document.createElement('div');
+        div.className = 'product';
+        div.innerHTML = `
+          <img src="https://via.placeholder.com/250x200?text=${encodeURIComponent(product.name)}" alt="${product.name}" />
+          <h3>${product.name}</h3>
+          <p>₹${product.price}</p>
+          <button onclick="payNow(${product.price}, '${product.name}')">Buy Now</button>
+          <button onclick="addToCart('${product.name}', ${product.price})">Add to Cart</button>
+        `;
+        container.appendChild(div);
+      });
+    };
+  </script>
+</body>
+</html>
