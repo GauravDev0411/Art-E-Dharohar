@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sign Up | Art-E-Dharohar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Playfair Display', serif;
+      background: linear-gradient(to bottom, #fff6e5, #fdf1e7);
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .signup-box {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 340px;
+    }
+
+    .signup-box h2 {
+      text-align: center;
+      color: #a3471b;
+      margin-bottom: 1.5rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 0.5rem 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-family: inherit;
+    }
+
+    label {
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #a3471b;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      margin-top: 1rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #8b3c15;
+    }
+
+    .bottom-links {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .bottom-links a {
+      color: #a3471b;
+      text-decoration: none;
+      display: block;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="signup-box">
+    <h2>Create New Account</h2>
+    <form onsubmit="signupUser(event)">
+      <input type="text" id="name" placeholder="Full Name" required />
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="tel" id="mobile" placeholder="Mobile Number" pattern="[0-9]{10}" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
+      <label>
+        <input type="checkbox" onclick="togglePasswordVisibility()"> Show Password
+      </label>
+      <button type="submit">Create Account</button>
+    </form>
+    <div class="bottom-links">
+      <a href="login.html">Already have an account? Login</a>
+      <a href="index.html">← Back to Home</a>
+    </div>
+  </div>
+
+  <script>
+    function togglePasswordVisibility() {
+      const pwd = document.getElementById("password");
+      const confirmPwd = document.getElementById("confirmPassword");
+      const type = pwd.type === "password" ? "text" : "password";
+      pwd.type = type;
+      confirmPwd.type = type;
+    }
+
+    function signupUser(event) {
+      event.preventDefault();
+
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const mobile = document.getElementById("mobile").value;
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+
+      if (password !== confirmPassword) {
+        alert("❌ Passwords do not match!");
+        return;
+      }
+
+      const user = { name, email, mobile, password };
+      localStorage.setItem("user", JSON.stringify(user));
+
+      alert(`✅ Account created for ${name}`);
+      window.location.href = "login.html";
+    }
+  </script>
+
+</body>
+</html>
