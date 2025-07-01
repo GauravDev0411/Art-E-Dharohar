@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Cart - Art-E-Dharohar</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <title>Cart | Art-E-Dharohar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <style>
     body {
@@ -14,95 +13,218 @@
       padding: 2rem;
       color: #4a2c20;
     }
+
     h1 {
       text-align: center;
       color: #a3471b;
+      margin-bottom: 2rem;
     }
-    .cart {
-      max-width: 600px;
-      margin: 2rem auto;
+
+    .cart-item {
       background: #fff;
-      padding: 1.5rem;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    }
-    .cart ul {
-      list-style: none;
-      padding: 0;
-    }
-    .cart ul li {
-      padding: 0.5rem 0;
-      border-bottom: 1px solid #eee;
+      border: 1px solid #e6b07c;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
       display: flex;
-      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
     }
-    .cart-total {
-      text-align: right;
-      margin-top: 1rem;
-      font-weight: bold;
+
+    .cart-item img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #ddd;
     }
-    .checkout-btn {
-      margin-top: 1.5rem;
-      width: 100%;
-      padding: 0.8rem;
-      background-color: #a3471b;
+
+    .cart-info {
+      flex: 1;
+    }
+
+    .cart-info h3 {
+      margin: 0 0 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    .cart-info p {
+      margin: 0.3rem 0;
+    }
+
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .qty-controls button {
+      padding: 0.3rem 0.7rem;
+      font-size: 1rem;
+      background: #a3471b;
       color: white;
       border: none;
-      font-size: 1rem;
       border-radius: 5px;
       cursor: pointer;
     }
-    .checkout-btn:disabled {
-      background: #ccc;
-      cursor: not-allowed;
+
+    .remove-btn {
+      background-color: #ff4d4d;
+      border: none;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #cart-total {
+      text-align: right;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-top: 2rem;
+      color: #333;
+    }
+
+    .empty {
+      text-align: center;
+      color: #999;
+      font-size: 1.1rem;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 2rem;
+      text-decoration: none;
+      color: #a3471b;
+      font-weight: bold;
+    }
+
+    .checkout-btn {
+      padding: 10px 20px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      margin-top: 1rem;
+      cursor: pointer;
+      float: right;
+    }
+
+    .checkout-btn:hover {
+      background-color: #218838;
     }
   </style>
 </head>
 <body>
+
   <h1>Your Cart</h1>
-  <div class="cart">
-    <ul id="cart-items"></ul>
-    <div class="cart-total">Total: ₹<span id="total">0</span></div>
-    <button id="checkoutBtn" class="checkout-btn">Checkout</button>
-  </div>
+  <div id="cart-container"></div>
+  <div id="cart-total"></div>
+  <button class="checkout-btn" onclick="checkout()">Checkout</button>
+  <a href="index.html" class="back-link">← Continue Shopping</a>
 
   <script>
-    const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
-    const cartList = document.getElementById('cart-items');
-    const totalEl = document.getElementById('total');
-    const checkoutBtn = document.getElementById('checkoutBtn');
+    function renderCart() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const container = document.getElementById('cart-container');
+      const totalDisplay = document.getElementById('cart-total');
 
-    let total = 0;
-    cartItems.forEach(item => {
-      const li = document.createElement('li');
-      li.innerHTML = `<span>${item.name}</span><span>₹${item.price}</span>`;
-      cartList.appendChild(li);
-      total += item.price;
-    });
-    totalEl.textContent = total;
+      container.innerHTML = '';
+      totalDisplay.innerHTML = '';
+      let total = 0;
 
-    checkoutBtn.onclick = () => {
-      if (total === 0) return alert("Cart is empty.");
+      if (cart.length === 0) {
+        container.innerHTML = '<p class="empty">Your cart is empty.</p>';
+        document.querySelector('.checkout-btn').style.display = 'none';
+        return;
+      } else {
+        document.querySelector('.checkout-btn').style.display = 'inline-block';
+      }
+
+      cart.forEach((item, index) => {
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'cart-item';
+        itemDiv.innerHTML = `
+          <img src="${item.image}" alt="${item.name}" />
+          <div class="cart-info">
+            <h3>${item.name}</h3>
+            <p>Price: ₹${item.price} × ${item.quantity} = ₹${itemTotal}</p>
+            <div class="qty-controls">
+              <button onclick="changeQuantity(${index}, -1)">−</button>
+              <span>${item.quantity}</span>
+              <button onclick="changeQuantity(${index}, 1)">+</button>
+              <button class="remove-btn" onclick="removeFromCart(${index})">Remove</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(itemDiv);
+      });
+
+      totalDisplay.textContent = `Total: ₹${total}`;
+    }
+
+    function changeQuantity(index, change) {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      cart[index].quantity += change;
+
+      if (cart[index].quantity <= 0) {
+        cart.splice(index, 1);
+      }
+
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderCart();
+    }
+
+    function removeFromCart(index) {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderCart();
+    }
+
+    function checkout() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      if (cart.length === 0) {
+        alert("Your cart is empty.");
+        return;
+      }
+
+      const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
       const options = {
-        key: "rzp_test_1DP5mmOlF5G5ag",
+        key: "rzp_test_1DP5mmOlF5G5ag", // Razorpay test key
         amount: total * 100,
         currency: "INR",
         name: "Art-E-Dharohar",
         description: "Cart Checkout",
-        image: "/mnt/data/channels4_profile.jpg",
+        image: "ArtLogo.jpg", // optional logo
         handler: function (response) {
-          alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
+          alert("✅ Payment successful! Payment ID: " + response.razorpay_payment_id);
           localStorage.removeItem('cart');
-          window.location.reload();
+          window.location.href = "index.html";
+        },
+        prefill: {
+          name: "",
+          email: "",
+          contact: ""
         },
         theme: {
           color: "#a3471b"
         }
       };
+
       const rzp = new Razorpay(options);
       rzp.open();
-    };
+    }
+
+    window.onload = renderCart;
   </script>
+
 </body>
 </html>
